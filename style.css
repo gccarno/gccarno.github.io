@@ -385,6 +385,35 @@ code {
   margin-top: 0.2rem;
 }
 
+.facts__link {
+  text-decoration: none;
+  border-bottom: 1px solid var(--rule);
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.facts__link:hover,
+.facts__link:focus-visible {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.facts__all {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  margin-top: 0.9rem;
+}
+
+.facts__all a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s ease;
+}
+
+.facts__all a:hover,
+.facts__all a:focus-visible { border-bottom-color: var(--accent); }
+
 .citation {
   font-size: 0.9375rem;
   line-height: 1.6;
