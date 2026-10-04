@@ -328,19 +328,20 @@
         <article class="project split">
           <div class="split__meta">
             <p class="project__kicker">Kaggle Playground Series</p>
-            <p class="project__status">S6E7 &middot; S6E8</p>
+            <p class="project__status">S6E7 &middot; S6E8 &middot; S6E9</p>
           </div>
           <div class="split__body">
             <h3 class="project__title">Tabular ensembles under a pre-registered improvement gate</h3>
             <p>
-              Two Playground Series competitions run as a single research programme: a frozen
+              Three Playground Series competitions run as a single research programme: a frozen
               cross-validation split, one metric, and a shipping threshold fixed <em>before</em>
               any result was seen. Every prediction artifact is keyed to that split, so out-of-fold
               matrices from runs weeks apart stay directly blendable.
             </p>
             <ul class="bullets">
               <li><strong>S6E7</strong> &mdash; 3-class health condition, scored on balanced accuracy against a heavily imbalanced training set. The shipped champion blends a bagged FT-Transformer with PLR numeric embeddings against a target-encoded XGBoost at a fixed 2:1 ratio. Finished <strong>rank 120 at private LB 0.95050</strong>, up 298 places in the shakeup.</li>
-              <li><strong>S6E8</strong> &mdash; binary classification over 691,369 rows &times; 12 features, scored on ROC AUC. Final submission is a four-family equal-weight blend of LightGBM, XGBoost, CatBoost, and a PyTorch MLP, at <strong>LB 0.96865</strong>.</li>
+              <li><strong>S6E8</strong> &mdash; binary classification over 691,369 rows &times; 12 features, scored on ROC AUC. Final submission is a four-family equal-weight blend of LightGBM, XGBoost, CatBoost, and a PyTorch MLP, finishing <strong>rank 675 of 3,532 (top 19.1%) at private LB 0.97030</strong>.</li>
+              <li><strong>S6E9</strong> &mdash; binary classification of electric-vehicle purchase over 668,665 rows, scored on ROC AUC with a 0.17 positive rate. Finished <strong>rank 230 of 3,576 (top 6.4%) at private LB 0.94549</strong>, up 206 places from the public board; the final blend scored the best private result of all 110 submissions. The key finding: income behaves as a value-to-target lookup rather than a magnitude &mdash; a memorisation artifact of the synthetic generator &mdash; which a monotone model cannot see.</li>
               <li><strong>Feature selection</strong> by SHAP consensus &mdash; TreeExplainer values from XGBoost, CatBoost, and LightGBM folded back onto source features, keeping the smallest set that reaches 95% of cumulative importance.</li>
               <li><strong>Optuna</strong> hyperparameter search on stratified subsamples with 3-fold CV, optimizing the competition metric directly. The largest single-leg gain it produced (+0.000544 solo) moved the blend +0.000068 and was not shipped.</li>
               <li><strong>Leakage discipline</strong> as the load-bearing constraint: target encoders, quantile bin edges, scalers, and category vocabularies are re-fit at every usage site &mdash; selection, tuning, and the final stack each get their own fit.</li>
@@ -369,16 +370,65 @@
               <li><strong>AI assistant</strong> runs a server-side agentic loop with 12 tools that read and write real garden state &mdash; companion planting, planting-calendar math from your frost dates, spacing capacity, task creation, weather, and watering. Tools execute in Python against the request&rsquo;s SQLAlchemy session, so there are no HTTP round-trips and everything stays in one transaction.</li>
               <li><strong>RAG</strong> over university extension growing guides via a pgvector index in Postgres, with API-side embeddings so no model is loaded into the request process. This replaced a ChromaDB store whose onnxruntime and 79&nbsp;MB embedding model could not fit a 512&nbsp;MB instance.</li>
               <li><strong>Predictive watering engine</strong> built on FAO-56: soil moisture deficit from actual evapotranspiration minus effective rainfall, with ET&#8320; estimated by Hargreaves&ndash;Samani from stored min/max temperatures, crop coefficients from a 33-plant table, and a 0&ndash;100 urgency score adjusted for heat, wind, and forecast rain.</li>
-              <li><strong>Weather tracking</strong> pulls 14 days of rainfall and temperature per garden from the Open-Meteo archive on an APScheduler job, so the deficit calculation always has fresh history.</li>
+              <li><strong>Weather tracking</strong> pulls 14 days of rainfall and temperature per garden on an APScheduler job, so the deficit calculation always has fresh history. Tomorrow.io is the primary provider with Open-Meteo, then stale cache, as fallbacks &mdash; and the API key is redacted from logged exceptions at the single HTTP choke point.</li>
               <li><strong>Plant recommender</strong> scores a ~9,000-entry library against zone, season, sunlight, soil pH, difficulty, and companions &mdash; a rule-based weighted sum, plus a gradient-boosting classifier trained on 539K synthetic rows and evaluated with precision@k, recall@k, and NDCG@k.</li>
               <li><strong>Backend</strong> on Neon Postgres, migrated from SQLite in FK order with sequence resets. Connection pooling is sized to survive Neon&rsquo;s free-tier autosuspend &mdash; <code>pool_pre_ping</code> transparently reconnects dropped sockets rather than erroring on the first query after idle.</li>
               <li><strong>Sentry</strong> for errors, slow-request warnings, and nightly job check-ins, with a path-based trace sampler, a <code>before_send</code> filter that drops expected probe errors, releases tagged to the deployed commit, and PII off by choice.</li>
               <li><strong>CI/CD</strong> on GitHub Actions: backend pytest, a Vite build and test, Android JVM unit tests, and a migrations job that builds the schema from Alembic revisions alone against a pgvector Postgres, then asserts it matches the models and reverses cleanly &mdash; a guard written after a column reached production without a migration. Render auto-deploys <code>main</code>; a scheduled workflow fires the nightly jobs and wakes both free-tier services.</li>
+              <li><strong>Infrastructure as code</strong> &mdash; the hand-built Google Cloud bucket, service account, and IAM grants and the Neon Postgres project were imported into Terraform with remote state, verified by a plan reporting no changes and guarded by <code>prevent_destroy</code>.</li>
               <li><strong>Images</strong> live in a private Google Cloud Storage bucket, proxied by the backend under an immutable cache header so each device downloads a given photo once.</li>
             </ul>
             <p class="stack">
               <span class="stack__key">Stack</span>
-              FastAPI &middot; SQLAlchemy &middot; Alembic &middot; React &middot; TypeScript &middot; Vite &middot; Neon Postgres &middot; pgvector &middot; Kotlin &middot; Render &middot; Google Cloud Storage &middot; Sentry &middot; GitHub Actions
+              FastAPI &middot; SQLAlchemy &middot; Alembic &middot; React &middot; TypeScript &middot; Vite &middot; Neon Postgres &middot; pgvector &middot; Kotlin &middot; Render &middot; Google Cloud Storage &middot; Sentry &middot; Terraform &middot; GitHub Actions
+            </p>
+          </div>
+        </article>
+
+        <article class="project split">
+          <div class="split__meta">
+            <p class="project__kicker">Kitchen Design</p>
+            <p class="project__status">In progress</p>
+          </div>
+          <div class="split__body">
+            <h3 class="project__title">LLM-assisted kitchen planner from room photos</h3>
+            <p>
+              A web app that turns room photos and a measured wall length (or a hand sketch) into a
+              draft 2D floor plan, then refines it through a chat interface and a catalog of
+              cabinets, appliances, and furniture.
+            </p>
+            <ul class="bullets">
+              <li><strong>Chat-driven edits</strong> &mdash; ask for changes in plain words (&ldquo;move the fridge to the north wall&rdquo;); every proposed edit is reviewed before it is applied.</li>
+              <li><strong>Manual editor</strong> on a react-konva canvas: outline editing, doors and windows, and catalog items (24 appliances, fixtures, and furniture plus 40 generated cabinets) with wall snapping and clearance warnings.</li>
+              <li><strong>Provider-agnostic LLM layer</strong> &mdash; any OpenAI-compatible endpoint, including OpenRouter with fallback models and a single retry on rate limits. Requests and responses are Zod-validated.</li>
+              <li>Exports to JSON and SVG/PNG, with Vitest and Playwright test suites.</li>
+            </ul>
+            <p class="stack">
+              <span class="stack__key">Stack</span>
+              Next.js 15 &middot; React 19 &middot; TypeScript &middot; Tailwind &middot; Zustand &middot; react-konva &middot; Zod &middot; Vitest &middot; Playwright
+            </p>
+          </div>
+        </article>
+
+        <article class="project split">
+          <div class="split__meta">
+            <p class="project__kicker">pdf2speech</p>
+            <p class="project__status">CLI</p>
+          </div>
+          <div class="split__body">
+            <h3 class="project__title">PDF articles to narrated MP3s</h3>
+            <p>
+              A command-line tool for listening to papers and articles in the car. It converts
+              PDFs into natural-sounding narration rather than reading raw extracted text.
+            </p>
+            <ul class="bullets">
+              <li><strong>LLM cleanup pass</strong> &mdash; each PDF&rsquo;s text goes through MiniMax-M3 via the GMI Serving API to produce a script suited to being spoken.</li>
+              <li><strong>Speech synthesis</strong> with Microsoft Edge TTS, with selectable voices and MP3 assembly through pydub and ffmpeg.</li>
+              <li>The LLM stage is unit-tested against a stubbed client, so the suite needs no API key.</li>
+            </ul>
+            <p class="stack">
+              <span class="stack__key">Stack</span>
+              Python &middot; Edge TTS &middot; pydub &middot; ffmpeg &middot; pytest
             </p>
           </div>
         </article>
