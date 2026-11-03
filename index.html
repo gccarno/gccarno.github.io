@@ -328,12 +328,12 @@
         <article class="project split">
           <div class="split__meta">
             <p class="project__kicker">Kaggle Playground Series</p>
-            <p class="project__status">S6E7 &middot; S6E8 &middot; S6E9</p>
+            <p class="project__status">S6E7 &middot; S6E8 &middot; S6E9 &middot; S6E10</p>
           </div>
           <div class="split__body">
             <h3 class="project__title">Tabular ensembles under a pre-registered improvement gate</h3>
             <p>
-              Three Playground Series competitions run as a single research programme: a frozen
+              Four Playground Series competitions run as a single research programme: a frozen
               cross-validation split, one metric, and a shipping threshold fixed <em>before</em>
               any result was seen. Every prediction artifact is keyed to that split, so out-of-fold
               matrices from runs weeks apart stay directly blendable.
@@ -342,6 +342,7 @@
               <li><strong>S6E7</strong> &mdash; 3-class health condition, scored on balanced accuracy against a heavily imbalanced training set. The shipped champion blends a bagged FT-Transformer with PLR numeric embeddings against a target-encoded XGBoost at a fixed 2:1 ratio. Finished <strong>rank 120 at private LB 0.95050</strong>, up 298 places in the shakeup.</li>
               <li><strong>S6E8</strong> &mdash; binary classification over 691,369 rows &times; 12 features, scored on ROC AUC. Final submission is a four-family equal-weight blend of LightGBM, XGBoost, CatBoost, and a PyTorch MLP, finishing <strong>rank 675 of 3,532 (top 19.1%) at private LB 0.97030</strong>.</li>
               <li><strong>S6E9</strong> &mdash; binary classification of electric-vehicle purchase over 668,665 rows, scored on ROC AUC with a 0.17 positive rate. Finished <strong>rank 230 of 3,576 (top 6.4%) at private LB 0.94549</strong>, up 206 places from the public board; the final blend scored the best private result of all 110 submissions. The key finding: income behaves as a value-to-target lookup rather than a magnitude &mdash; a memorisation artifact of the synthetic generator &mdash; which a monotone model cannot see.</li>
+              <li><strong>S6E10</strong> &mdash; binary classification of airline passenger satisfaction over 699,635 rows, scored on ROC AUC. Finished <strong>rank 458 of 3,735 (top 12.3%) at private LB 0.96235</strong>, up 418 places from the public board. The final submission, an L2-regularised logit stack over 195 fold-aligned out-of-fold members (15 in-house, the rest from public notebooks), tied for the best private score of all 141 submitted runs. Flight distance turned out to be a route lookup: route-profile features plus a teacher trained on the original dataset delivered over half of the private gain over baseline.</li>
               <li><strong>Feature selection</strong> by SHAP consensus &mdash; TreeExplainer values from XGBoost, CatBoost, and LightGBM folded back onto source features, keeping the smallest set that reaches 95% of cumulative importance.</li>
               <li><strong>Optuna</strong> hyperparameter search on stratified subsamples with 3-fold CV, optimizing the competition metric directly. The largest single-leg gain it produced (+0.000544 solo) moved the blend +0.000068 and was not shipped.</li>
               <li><strong>Leakage discipline</strong> as the load-bearing constraint: target encoders, quantile bin edges, scalers, and category vocabularies are re-fit at every usage site &mdash; selection, tuning, and the final stack each get their own fit.</li>
@@ -349,7 +350,7 @@
             </ul>
             <p class="stack">
               <span class="stack__key">Stack</span>
-              XGBoost &middot; CatBoost &middot; LightGBM &middot; FT-Transformer &middot; PyTorch &middot; Optuna &middot; SHAP &middot; scikit-learn
+              XGBoost &middot; CatBoost &middot; LightGBM &middot; FT-Transformer &middot; TabPFN &middot; PyTorch &middot; Optuna &middot; SHAP &middot; scikit-learn
             </p>
           </div>
         </article>
